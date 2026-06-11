@@ -12,7 +12,8 @@ class TestcontainersConfiguration {
 	@Bean
 	@ServiceConnection
 	MySQLContainer mysqlContainer() {
-		return new MySQLContainer(DockerImageName.parse("mysql:latest"));
+		DockerImageName mariadbImage = DockerImageName.parse("mariadb:11.2").asCompatibleSubstituteFor("mysql");
+		return new MySQLContainer(mariadbImage);
 	}
 
 }
