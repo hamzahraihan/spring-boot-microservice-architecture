@@ -5,12 +5,14 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.context.annotation.Import;
+import org.wiremock.spring.EnableWireMock;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 
 @Import(TestcontainersConfiguration.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@EnableWireMock
 class OrderServiceApplicationTests {
 
 	@LocalServerPort
@@ -26,11 +28,13 @@ class OrderServiceApplicationTests {
 	void shouldCreateOrder() {
 		String submitOrder = """
 				{
-					"skuCode": "iphone_15",
+					"skuCode": "iphone_5",
 					"price": 1000,
 					"quantity": 1
 				}
 				""";
+
+		InventoryClientStubs.stubInventoryCall("iphone_5", 1);
 
 		RestAssured.given()
 				.contentType(ContentType.JSON)
