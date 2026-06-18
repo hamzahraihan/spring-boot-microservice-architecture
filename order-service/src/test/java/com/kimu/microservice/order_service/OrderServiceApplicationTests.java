@@ -34,6 +34,10 @@ class OrderServiceApplicationTests {
 				}
 				""";
 
+		// using wiremock so testing http request to inventory service does not rely on
+		// inventory service
+		// in other word we dont need to activate inventory service to test http
+		// request, instead the wiremock will give the stub response that we made before
 		InventoryClientStubs.stubInventoryCall("iphone_5", 1);
 
 		RestAssured.given()

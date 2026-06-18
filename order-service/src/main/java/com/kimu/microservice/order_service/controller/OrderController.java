@@ -14,16 +14,18 @@ import com.kimu.microservice.order_service.dto.OrderRequest;
 import com.kimu.microservice.order_service.dto.OrderResponse;
 import com.kimu.microservice.order_service.service.OrderService;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @RequestMapping("/api/order")
-@RequiredArgsConstructor
 @Slf4j
 public class OrderController {
 
     private final OrderService orderService;
+
+    OrderController(OrderService orderService) {
+        this.orderService = orderService;
+    }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
