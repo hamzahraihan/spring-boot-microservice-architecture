@@ -1,9 +1,10 @@
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useKeycloak } from "../../../hooks/useKeycloak";
 import { GetProduct } from "../api/get-product";
 import ProductCard from "./product";
 import type { OrderType } from "../../order/type/ordertype";
 import { createOrder } from "../../order/api/create-order";
+import "./product-list.css";
 
 export type ProductType = {
   description: string;
@@ -17,12 +18,6 @@ function ProductList() {
   const { keycloak, isAuthenticated, isInitialized } = useKeycloak();
   const [products, setProducts] = useState<ProductType[] | null>(null);
   const [isloading, setIsLoading] = useState(false);
-  const [qty, setQty] = useState<number>(0);
-  const [cart, setCart] = useState<OrderType>({
-    qty: qty,
-    price: 0,
-    skuCode: "",
-  });
 
   useEffect(() => {
     // 2. STALL: If Keycloak isn't ready yet, do absolutely nothing.
@@ -35,7 +30,8 @@ function ProductList() {
     const fetchProducts = async () => {
       try {
         setIsLoading(true);
-        const data = await GetProduct(keycloak?.token);
+        const response = await GetProduct(keycloak?.token);
+        const data = await response.json();
         setProducts(data);
       } catch (err) {
         console.error("Fetch products is failed", err);
@@ -47,27 +43,30 @@ function ProductList() {
     fetchProducts();
   }, [keycloak?.token]);
 
-  const handleOrder = useCallback((data: OrderType) => {
-    setCart(data);
-    console.log(data);
-    // createOrder(cart);
-  }, []);
+  const handleOrder = async (data: OrderType) => {
+    const response = await createOrder(data, keycloak?.token);
+    if (data.quantity == 0 || data.quantity == undefined) {
+      alert("Minimum order quantity is 1");
+      return;
+    }
+    if (response.status == 404) {
+      alert("Product not found");
+    }
+    if (response.ok) {
+      alert(await response.text());
+    }
+  };
+
   console.log(products);
   if (isloading) return <div>loading...</div>;
   if (!products) return <div>No products found</div>;
   if (!isAuthenticated) return <div>You have to login</div>;
 
   return (
-    <div>
-      <ul>
+    <div className="product-list">
+      <ul className="container-product">
         {products.map((data: ProductType) => (
-          <ProductCard
-            key={data.id}
-            data={data}
-            qty={qty}
-            setQty={setQty}
-            handleOrder={handleOrder}
-          />
+          <ProductCard key={data.id} data={data} handleOrder={handleOrder} />
         ))}
       </ul>
     </div>
