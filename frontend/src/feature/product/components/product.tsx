@@ -1,19 +1,16 @@
-import type { Dispatch, SetStateAction } from "react";
+import { useState } from "react";
 import type { ProductType } from "./product-list";
 import "./product.css";
 import type { OrderType } from "../../order/type/ordertype";
 
 function ProductCard({
   data,
-  qty,
-  setQty,
   handleOrder,
 }: {
   data: ProductType;
-  qty: number;
-  setQty: Dispatch<SetStateAction<number>>;
   handleOrder: (data: OrderType) => void;
 }) {
+  const [qty, setQty] = useState<number>(1);
   return (
     <div key={data.id} className="card">
       <div>
@@ -28,19 +25,32 @@ function ProductCard({
         <p>Quantity</p>
         <input
           type="number"
-          id="qty"
+          id={data.id}
           name="qty"
-          value={qty}
+          value={Number.isNaN(qty) ? "" : qty}
           min={1}
-          onChange={(e) => setQty(e.target.valueAsNumber)}
+          onChange={(e) => {
+            const val = e.target.value;
+
+            // If empty, set state to 0 or "" so the user can type something new
+            if (val === "") {
+              setQty(1);
+            } else {
+              setQty(Number(val));
+            }
+          }}
           className="input-product"
           required
         />
       </div>
       <button
-        className=""
+        className="btn btn-order"
         onClick={() =>
-          handleOrder({ skuCode: data.skuCode, price: data.price, qty: qty })
+          handleOrder({
+            skuCode: data.skuCode,
+            price: data.price,
+            quantity: qty,
+          })
         }
       >
         Order Now
