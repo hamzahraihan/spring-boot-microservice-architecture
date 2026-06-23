@@ -19,7 +19,8 @@ async function fetchApi(url: string, options: RequestOptions = {}) {
     },
     body: body ? JSON.stringify(body) : undefined,
   });
-  return await response.json();
+
+  return response;
 }
 
 export const api = {
