@@ -1,5 +1,5 @@
 export type OrderType = {
-  qty: number;
+  quantity: number;
   price: number;
   skuCode: string;
 };
