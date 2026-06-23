@@ -35,16 +35,6 @@
   align-items: center;
 }
 
-.btn {
-  display: inline-flex;
-  justify-content: center;
-  align-items: center;
-  color: #fff3f6;
-  padding: 0.5rem 1.5rem;
-  border-radius: 12px;
-  font-size: 1rem;
-}
-
 .btn-login {
   background-color: #000000;
 }
