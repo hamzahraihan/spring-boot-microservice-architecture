@@ -2,17 +2,9 @@ import { useEffect, useState } from "react";
 import { useKeycloak } from "../../../hooks/useKeycloak";
 import { GetProduct } from "../api/get-product";
 import ProductCard from "./product";
-import type { OrderType } from "../../order/type/ordertype";
 import { createOrder } from "../../order/api/create-order";
 import "./product-list.css";
-
-export type ProductType = {
-  description: string;
-  id: string;
-  name: string;
-  price: number;
-  skuCode: string;
-};
+import type { OrderType, ProductType } from "../../../types/api";
 
 function ProductList() {
   const { keycloak, isAuthenticated, isInitialized } = useKeycloak();
@@ -20,7 +12,7 @@ function ProductList() {
   const [isloading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    // 2. STALL: If Keycloak isn't ready yet, do absolutely nothing.
+    // if keycloak isn't ready yet, do absolutely nothing.
     if (!isInitialized) return;
     // Only fetch if the token is available
     if (!keycloak?.token) {
@@ -51,6 +43,9 @@ function ProductList() {
     }
     if (response.status == 404) {
       alert("Product not found");
+    }
+    if (response.status == 503) {
+      alert("Failed to order. Please try again later.");
     }
     if (response.ok) {
       alert(await response.text());
