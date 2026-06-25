@@ -12,13 +12,6 @@
   padding: 20px;
 }
 
-.input-product {
-  background-color: white;
-  border: 1px burlywood solid;
-  border-radius: 5px;
-  padding: 4px;
-}
-
 .btn-order {
   background-color: green;
 }
