@@ -1,0 +1,21 @@
+.form {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 2px;
+  max-width: 100%;
+}
+
+@media (min-width: 768px) {
+  .form {
+    max-width: 40vw;
+  }
+}
+
+.btn-submit {
+  background-color: lightgreen;
+}
+
+.form-input {
+  width: 70%;
+}
