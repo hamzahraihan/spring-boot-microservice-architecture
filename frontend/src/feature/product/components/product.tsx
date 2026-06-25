@@ -1,7 +1,6 @@
 import { useState } from "react";
-import type { ProductType } from "./product-list";
 import "./product.css";
-import type { OrderType } from "../../order/type/ordertype";
+import type { OrderType, ProductType } from "../../../types/api";
 
 function ProductCard({
   data,
@@ -39,7 +38,7 @@ function ProductCard({
               setQty(Number(val));
             }
           }}
-          className="input-product"
+          className="input"
           required
         />
       </div>
