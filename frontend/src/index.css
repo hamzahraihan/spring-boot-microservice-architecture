@@ -129,3 +129,14 @@ footer {
   font-size: 1rem;
   height: 50px;
 }
+
+.container {
+  padding: 1rem;
+}
+
+input {
+  background-color: white;
+  border: 1px burlywood solid;
+  border-radius: 5px;
+  padding: 4px;
+}
