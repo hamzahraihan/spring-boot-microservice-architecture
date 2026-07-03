@@ -31,6 +31,52 @@ services:
       - "./docker/keycloak/realms/:/opt/keycloak/data/import/"
     depends_on:
       - keycloak-mysql
+  loki:
+    image: grafana/loki:2.9.0
+    ports:
+      - "3100:3100"
+    command: -config.file=/etc/loki/local-config.yaml
+    networks:
+      - lgtm-network
+  prometheus:
+    image: prom/prometheus:latest
+    command:
+      - --enable-feature=exemplar-storage
+      - --config.file=/etc/prometheus/prometheus.yml
+    volumes:
+      - ./docker/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    ports:
+      - "9090:9090" # Optional: useful if you want to see the raw Prometheus UI
+    networks:
+      - lgtm-network
+  # Grafana Tempo Tracing Backend
+  tempo:
+    image: grafana/tempo:2.10.0
+    command: ["-config.file=/etc/tempo.yaml"]
+    ports:
+      - "3200:3200" # Tempo search / frontend engine port (for Grafana UI)
+      - "9411:9411" # Zipkin compatibility port (where Spring app pushes traces)
+    volumes:
+      - ./docker/tempo/tempo.yml:/etc/tempo.yaml:ro
+      - tempo_data:/var/tempo
+  grafana:
+    image: grafana/grafana:13.0.1
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin # Default UI login: admin / admin
+      - GF_ANALYTICS_REPORTING_ENABLED=false
+    volumes:
+      # Mounts your datasource file into Grafana's automatic provisioning directory
+      - ./docker/grafana:/etc/grafana/provisioning/datasources:ro
+    networks:
+      - lgtm-network
+
+# Essential: Explicitly defining the shared communication bridge
+networks:
+  lgtm-network:
+    driver: bridge
 
 volumes:
   mysql_data:
+  tempo_data:
