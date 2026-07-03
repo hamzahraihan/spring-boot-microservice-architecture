@@ -7,7 +7,8 @@ import "./product-list.css";
 import type { OrderType, ProductType } from "../../../types/api";
 
 function ProductList() {
-  const { keycloak, isAuthenticated, isInitialized } = useKeycloak();
+  const { keycloak, isAuthenticated, isInitialized, userDetails } =
+    useKeycloak();
   const [products, setProducts] = useState<ProductType[] | null>(null);
   const [isloading, setIsLoading] = useState(false);
 
@@ -36,7 +37,12 @@ function ProductList() {
   }, [keycloak?.token]);
 
   const handleOrder = async (data: OrderType) => {
-    const response = await createOrder(data, keycloak?.token);
+    const order: OrderType = {
+      ...data,
+      userDetails: userDetails,
+    };
+    console.log(order);
+    const response = await createOrder(order, keycloak?.token);
     if (data.quantity == 0 || data.quantity == undefined) {
       alert("Minimum order quantity is 1");
       return;

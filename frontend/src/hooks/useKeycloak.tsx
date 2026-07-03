@@ -5,6 +5,7 @@ export const KeycloakContext = createContext<KeycloakConnectType>({
   keycloak: null,
   isAuthenticated: false,
   isInitialized: false,
+  userDetails: { email: "", firstName: "", lastName: "" },
 });
 
 export const useKeycloak = () => useContext(KeycloakContext);

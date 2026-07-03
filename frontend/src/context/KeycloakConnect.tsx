@@ -1,11 +1,13 @@
 import Keycloak from "keycloak-js";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { KeycloakContext } from "../hooks/useKeycloak";
+import type { UserDetails } from "../types/api";
 
 export interface KeycloakConnectType {
   keycloak: Keycloak | null;
   isAuthenticated: boolean;
   isInitialized: boolean;
+  userDetails: UserDetails;
 }
 
 const keycloakInstance = new Keycloak({
@@ -17,6 +19,12 @@ const keycloakInstance = new Keycloak({
 export const KeycloakProvider = ({ children }: { children: ReactNode }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isInitialized, setIsInitialized] = useState(false);
+  const [userDetails, setUserDetails] = useState<UserDetails>({
+    email: "",
+    firstName: "",
+    lastName: "",
+  });
+
   const isInitializingRef = useRef(false);
 
   useEffect(() => {
@@ -34,6 +42,16 @@ export const KeycloakProvider = ({ children }: { children: ReactNode }) => {
         setIsAuthenticated(authenticated);
         setIsInitialized(authenticated);
 
+        if (authenticated) {
+          keycloakInstance.loadUserProfile().then((profile) =>
+            setUserDetails({
+              email: profile.email,
+              firstName: profile.firstName,
+              lastName: profile.lastName,
+            }),
+          );
+        }
+
         setInterval(() => {
           keycloakInstance.updateToken(60).catch(() => {
             console.error("Failed to refresh token or session expired");
@@ -48,7 +66,12 @@ export const KeycloakProvider = ({ children }: { children: ReactNode }) => {
 
   return (
     <KeycloakContext.Provider
-      value={{ keycloak: keycloakInstance, isAuthenticated, isInitialized }}
+      value={{
+        keycloak: keycloakInstance,
+        isAuthenticated,
+        isInitialized,
+        userDetails,
+      }}
     >
       {children}
     </KeycloakContext.Provider>
