@@ -1,0 +1,24 @@
+stream_over_http_enabled: true
+server:
+  http_listen_port: 3200
+
+# This matches the receiver block highlighted in the architecture diagram
+distributor:
+  receivers:
+    zipkin:
+      endpoint: '0.0.0.0:9411' # Binds open to intercept Spring trace spans
+
+ingester:
+  max_block_duration: 5m
+
+compactor:
+  compaction:
+    block_retention: 24h # Retain local traces for 24 hours
+
+storage:
+  trace:
+    backend: local
+    local:
+      path: /var/tempo/blocks
+    wal:
+      path: /var/tempo/wal
