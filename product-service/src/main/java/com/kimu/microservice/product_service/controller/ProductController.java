@@ -21,8 +21,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 @RequestMapping("/api/product")
 public class ProductController {
 
-    @Autowired
-    private ProductService productService;
+    private final ProductService productService;
+
+    ProductController(ProductService productService) {
+        this.productService = productService;
+    }
 
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)

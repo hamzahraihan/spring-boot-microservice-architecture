@@ -2,7 +2,6 @@ package com.kimu.microservice.product_service.service;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.kimu.microservice.product_service.dto.ProductRequest;
@@ -16,8 +15,11 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class ProductService {
 
-    @Autowired
-    private ProductRepository productRepository;
+    private final ProductRepository productRepository;
+
+    ProductService(ProductRepository productRepository) {
+        this.productRepository = productRepository;
+    }
 
     public ProductResponse createProduct(ProductRequest productRequest) {
         Product product = Product.builder()
