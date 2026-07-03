@@ -5,12 +5,14 @@ import java.util.List;
 import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.kimu.microservice.order_service.client.InventoryClient;
 import com.kimu.microservice.order_service.dto.OrderRequest;
 import com.kimu.microservice.order_service.dto.OrderResponse;
+import com.kimu.microservice.order_service.event.OrderPlacedEvent;
 import com.kimu.microservice.order_service.model.Order;
 import com.kimu.microservice.order_service.repository.OrderRepository;
 
@@ -24,6 +26,7 @@ public class OrderService {
 
     private final OrderRepository orderRepository;
     private final InventoryClient inventoryClient;
+    private final KafkaTemplate<String, OrderPlacedEvent> kafkaTemplate;
 
     public void placeOrder(OrderRequest orderRequest) {
         boolean isProductInStock = inventoryClient.isInStock(orderRequest.skuCode(), orderRequest.quantity());
@@ -35,6 +38,17 @@ public class OrderService {
             order.setSkuCode(orderRequest.skuCode());
             order.setQuantity(orderRequest.quantity());
             orderRepository.save(order);
+
+            // send a message to kafka topic
+            OrderPlacedEvent orderPlacedEvent = new OrderPlacedEvent();
+            orderPlacedEvent.setOrderNumber(order.getOrderNumber());
+            orderPlacedEvent.setEmail(orderRequest.userDetails().email());
+            orderPlacedEvent.setFirstName(orderRequest.userDetails().firstName());
+            orderPlacedEvent.setLastName(orderRequest.userDetails().lastName());
+
+            log.info("Start - sending orderPlacedEvent {} to kafka topic order-placed", orderPlacedEvent);
+            kafkaTemplate.send("order-placed", orderPlacedEvent);
+            log.info("End - sending orderPlacedEvent {} to kafka topic order-placed", orderPlacedEvent);
         } else {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Product with this Sku Code is not found!");
         }

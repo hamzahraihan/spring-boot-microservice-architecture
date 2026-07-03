@@ -5,7 +5,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.context.annotation.Import;
+import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.wiremock.spring.EnableWireMock;
+
+import com.kimu.microservice.order_service.event.OrderPlacedEvent;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
@@ -17,6 +21,9 @@ class OrderServiceApplicationTests {
 
 	@LocalServerPort
 	private Integer port;
+
+	@MockitoBean
+	private KafkaTemplate<String, OrderPlacedEvent> kafkaTemplate;
 
 	@BeforeEach
 	void setup() {
@@ -30,7 +37,8 @@ class OrderServiceApplicationTests {
 				{
 					"skuCode": "iphone_5",
 					"price": 1000,
-					"quantity": 1
+					"quantity": 1,
+					"userDetails": { "email": "test@test.com", "firstName": "test", "lastName": "test" }
 				}
 				""";
 
