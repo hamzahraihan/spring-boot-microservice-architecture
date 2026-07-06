@@ -1,4 +1,29 @@
+# Comments are provided throughout this file to help you get started.
+# If you need more help, visit the Docker Compose reference guide at
+# https://docs.docker.com/go/compose-spec-reference/
+
+# Here the instructions define your application as a service called "server".
+# This service is built from the Dockerfile in the current directory.
+# You can add other services your application may depend on here, such as a
+# database or a cache. For examples, see the Awesome Compose repository:
+# https://github.com/docker/awesome-compose
 services:
+  server:
+    build:
+      context: .
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/order_service
+      - KAFKA_BOOTSTRAP_SERVERS=broker:29092
+      - SCHEMA_REGISTRY_URL=http://schema-registry:8081
+      - LOKI_URL=http://loki:3100/loki/api/v1/push
+      - ZIPKIN_URL=http://tempo:9411
+    ports:
+      - 8081:8081
+    depends_on:
+      - mysql
+      - broker
+    networks:
+      - lgtm-network
   mysql:
     image: mysql:8.4.9
     container_name: order-service-mysql
@@ -9,6 +34,8 @@ services:
     volumes:
       - mysql_data:/var/lib/mysql
       - ./docker/mysql/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - lgtm-network
   zookeeper:
     image: confluentinc/cp-zookeeper:7.5.0
     hostname: zookeeper
@@ -18,6 +45,8 @@ services:
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
+    networks:
+      - lgtm-network
   broker:
     image: confluentinc/cp-kafka:7.5.0
     container_name: broker
@@ -32,6 +61,8 @@ services:
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://broker:29092,PLAINTEXT_HOST://localhost:9092
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    networks:
+      - lgtm-network
   schema-registry:
     image: confluentinc/cp-schema-registry:7.5.0
     hostname: schema-registry
@@ -56,6 +87,46 @@ services:
       KAFKA_CLUSTERS_BOOTSTRAPSERVERS: broker:29092
       #      KAFKA_CLUSTERS_SCHEMAREGISTRY: http://schema-registry:8081
       DYNAMIC_CONFIG_ENABLED: "true"
+    networks:
+      - lgtm-network
 
 volumes:
   mysql_data:
+networks:
+  lgtm-network:
+    external: true
+    name: api-gateway_lgtm-network
+
+# The commented out section below is an example of how to define a PostgreSQL
+# database that your application can use. `depends_on` tells Docker Compose to
+# start the database before your application. The `db-data` volume persists the
+# database data between container restarts. The `db-password` secret is used
+# to set the database password. You must create `db/password.txt` and add
+# a password of your choosing to it before running `docker-compose up`.
+#     depends_on:
+#       db:
+#         condition: service_healthy
+#   db:
+#     image: postgres
+#     restart: always
+#     user: postgres
+#     secrets:
+#       - db-password
+#     volumes:
+#       - db-data:/var/lib/postgresql/data
+#     environment:
+#       - POSTGRES_DB=example
+#       - POSTGRES_PASSWORD_FILE=/run/secrets/db-password
+#     expose:
+#       - 5432
+#     healthcheck:
+#       test: [ "CMD", "pg_isready" ]
+#       interval: 10s
+#       timeout: 5s
+#       retries: 5
+# volumes:
+#   db-data:
+# secrets:
+#   db-password:
+#     file: db/password.txt
+
