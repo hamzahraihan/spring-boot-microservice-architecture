@@ -1,0 +1,7 @@
+# kustomization.yaml
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - manifests/infrastructure/keycloak.yaml
+  - manifests/infrastructure/mongodb.yaml
+  - manifests/infrastructure/mysql.yaml
