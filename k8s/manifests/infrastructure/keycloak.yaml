@@ -1,0 +1,101 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: kecloak
+  name: keycloak
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: keycloak
+  template:
+    metadata:
+      labels:
+        app: keycloak
+    spec:
+      containers:
+        - name: keycloak
+          image: quay.io/keycloak/keycloak:24.0.5
+          resources:
+            requests:
+              memory: '512Mi'
+              cpu: '250m' # 25% of a core
+            limits:
+              memory: '1Gi' # Strict cap to save your host OS
+              # cpu: '1000m' # 1 full core (needed for fast startup)
+          ports:
+            - containerPort: 8080
+          # args: ['start-dev']
+          command:
+            - '/bin/sh'
+            - '-c'
+            - '/opt/keycloak/bin/kc.sh build && /opt/keycloak/bin/kc.sh start --optimized --hostname-strict=false --http-enabled=true'
+          env:
+            - name: KC_DB_USERNAME
+              valueFrom:
+                configMapKeyRef:
+                  key: KC_DB_USERNAME
+                  name: keycloak-realm-config
+            - name: KC_DB
+              valueFrom:
+                configMapKeyRef:
+                  key: KC_DB
+                  name: keycloak-realm-config
+            - name: KC_DB_URL
+              valueFrom:
+                configMapKeyRef:
+                  key: KC_DB_URL
+                  name: keycloak-realm-config
+            - name: KC_DB_URL_DATABASE
+              valueFrom:
+                configMapKeyRef:
+                  key: KC_DB_URL_DATABASE
+                  name: keycloak-realm-config
+            - name: KC_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: KC_DB_PASSWORD
+                  name: keycloak-secrets
+            - name: KEYCLOAK_ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: KEYCLOAK_ADMIN_PASSWORD
+                  name: keycloak-secrets
+      volumes:
+        - name: keycloak-realm
+          configMap:
+            name: keycloak-realm-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: keycloak
+  labels:
+    app: keycloak
+spec:
+  selector:
+    app: keycloak
+  ports:
+    - port: 8080
+      targetPort: 8080
+  type: ClusterIP
+---
+apiVersion: v1
+data:
+  KC_DB_PASSWORD: a2V5Y2xvYWstcGFzc3dvcmQ=
+  KEYCLOAK_ADMIN_PASSWORD: YWRtaW4=
+kind: Secret
+metadata:
+  name: keycloak-secrets
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: keycloak-realm-config
+data:
+  KC_DB: 'mysql'
+  KC_DB_URL: 'jdbc:mysql://mysql:3306/keycloak?useSSL=false&allowPublicKeyRetrieval=true&characterEncoding=UTF-8'
+  KC_DB_URL_DATABASE: 'keycloak'
+  KC_DB_USERNAME: 'keycloak'
+  KEYCLOAK_ADMIN: 'admin'
