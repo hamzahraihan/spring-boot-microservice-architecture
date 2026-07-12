@@ -1,0 +1,113 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mysql
+  labels:
+    app: mysql
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mysql
+  template:
+    metadata:
+      labels:
+        app: mysql
+    spec:
+      containers:
+        - name: mysql
+          image: mysql:8.4.9
+          # Savior for low-spec laptops: drops RAM usage significantly
+          args: ['--performance-schema=OFF']
+          ports:
+            - containerPort: 3306
+          resources:
+            requests:
+              memory: '384Mi' # Minimum it needs to boot comfortably
+              cpu: '100m' # 10% of a single CPU core
+            limits:
+              memory: '512Mi' # Caps it so it never steals your free RAM
+              # cpu: '500m' # Caps it at 10% of a single core
+          env:
+            - name: MYSQL_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: mysql_root_password
+                  name: mysql-secret
+          volumeMounts:
+            - mountPath: /var/lib/mysql
+              name: mysql-data
+            - mountPath: /docker-entrypoint-initdb.d
+              name: mysql-init
+      volumes:
+        - name: mysql-data
+          persistentVolumeClaim:
+            claimName: mysql-pvc
+        - name: mysql-init
+          configMap:
+            name: mysql-initdb-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: mysql
+  name: mysql
+spec:
+  ports:
+    - name: 3306-3306
+      port: 3306
+      protocol: TCP
+      targetPort: 3306
+  selector:
+    app: mysql
+  type: ClusterIP
+---
+apiVersion: v1
+data:
+  mysql_root_password: cm9vdA==
+kind: Secret
+metadata:
+  name: mysql-secret
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: mysql-pv
+spec:
+  capacity:
+    storage: 256Mi
+  accessModes:
+    - ReadWriteOnce
+  volumeMode: Filesystem
+  storageClassName: slow
+  hostPath:
+    path: /var/lib/mysql-fresh-1
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mysql-pvc
+spec:
+  resources:
+    requests:
+      storage: 256Mi
+  volumeMode: Filesystem
+  storageClassName: slow
+  accessModes:
+    - ReadWriteOnce
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mysql-initdb-config
+data:
+  initdb.sql: |
+    CREATE DATABASE IF NOT EXISTS order_service;
+    CREATE DATABASE IF NOT EXISTS inventory_service;
+
+    /* Add Keycloak Database and User */
+    CREATE DATABASE IF NOT EXISTS keycloak;
+    CREATE USER IF NOT EXISTS 'keycloak'@'%' IDENTIFIED BY 'keycloak-password';
+    GRANT ALL PRIVILEGES ON keycloak.* TO 'keycloak'@'%';
+    FLUSH PRIVILEGES;
