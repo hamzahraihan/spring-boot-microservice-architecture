@@ -9,7 +9,7 @@ type RequestOptions = {
 
 async function fetchApi(url: string, options: RequestOptions = {}) {
   const { method = "GET", body, token } = options;
-  const apiUrl = `${import.meta.env.VITE_PUBLIC_API_URL}${url}`;
+  const apiUrl = `${window._env_?.VITE_PUBLIC_API_URL || import.meta.env.VITE_PUBLIC_API_URL}${url}`;
 
   const response = await fetch(apiUrl, {
     method,
