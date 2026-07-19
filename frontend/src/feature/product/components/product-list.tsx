@@ -4,7 +4,7 @@ import { GetProduct } from "../api/get-product";
 import ProductCard from "./product";
 import { createOrder } from "../../order/api/create-order";
 import "./product-list.css";
-import type { OrderType, ProductType } from "../../../types/api";
+import type { OrderType, ProductType, UserDetails } from "../../../types/api";
 
 function ProductList() {
   const { keycloak, isAuthenticated, isInitialized, userDetails } =
@@ -37,9 +37,13 @@ function ProductList() {
   }, [keycloak?.token]);
 
   const handleOrder = async (data: OrderType) => {
-    const order: OrderType = {
+    const order: OrderType & { userDetails: UserDetails } = {
       ...data,
-      userDetails: userDetails,
+      userDetails: {
+        email: userDetails.email,
+        firstName: userDetails.firstName,
+        lastName: userDetails.lastName,
+      },
     };
     console.log(order);
     const response = await createOrder(order, keycloak?.token);
@@ -66,7 +70,7 @@ function ProductList() {
   return (
     <div className="product-list">
       <ul className="container-product">
-        {products.map((data: ProductType) => (
+        {products?.map((data: ProductType) => (
           <ProductCard key={data.id} data={data} handleOrder={handleOrder} />
         ))}
       </ul>
