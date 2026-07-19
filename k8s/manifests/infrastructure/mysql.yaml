@@ -27,7 +27,7 @@ spec:
               cpu: '100m' # 10% of a single CPU core
             limits:
               memory: '512Mi' # Caps it so it never steals your free RAM
-              # cpu: '500m' # Caps it at 10% of a single core
+              cpu: '500m' # Caps it at 10% of a single core
           env:
             - name: MYSQL_ROOT_PASSWORD
               valueFrom:
