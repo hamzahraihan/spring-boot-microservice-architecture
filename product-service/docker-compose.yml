@@ -11,43 +11,47 @@ services:
   server:
     build:
       context: .
+    environment:
+      - SPRING_DATASOURCE_URL=mongodb://root:root@localhost:27017/product-service?authSource=admin
+      - SCHEMA_REGISTRY_URL=http://localhost:8081
+      - LOKI_URL=http://localhost:3100/loki/api/v1/push
+      - ZIPKIN_URL=http://localhost:9411
     ports:
       - 8080:8080
-#     depends_on:
-#       mongodb:
-#         condition: service_healthy
+    depends_on:
+      mongodb:
+        condition: service_healthy
+  mongodb:
+    image: mongo:8.3.2
+    container_name: mongodb
+    restart: always
+    ports:
+      - 27017:27017
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: root
+      MONGO_INITDB_DATABASE: product-service
+    volumes:
+      - mongo_data:/data/db
+    healthcheck:
+      test:
+        - "CMD"
+        - "mongosh"
+        - "--username"
+        - "root"
+        - "--password"
+        - "root"
+        - "--authenticationDatabase"
+        - "admin"
+        - "--eval"
+        - "db.adminCommand('ping').ok"
+        - "--quiet"
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
-#   mongodb:
-#     image: mongo:8.3.2
-#     container_name: mongodb
-#     restart: always
-#     ports:
-#       - 27017:27017
-#     environment:
-#       MONGO_INITDB_ROOT_USERNAME: root
-#       MONGO_INITDB_ROOT_PASSWORD: root
-#       MONGO_INITDB_DATABASE: product-service
-#     volumes:
-#       - mongo_data:/data/db
-#     healthcheck:
-#       test:
-#         - "CMD"
-#         - "mongosh"
-#         - "--username"
-#         - "root"
-#         - "--password"
-#         - "root"
-#         - "--authenticationDatabase"
-#         - "admin"
-#         - "--eval"
-#         - "db.adminCommand('ping').ok"
-#         - "--quiet"
-#       interval: 10s
-#       timeout: 5s
-#       retries: 5
-
-# volumes:
-#   mongo_data:
+volumes:
+  mongo_data:
 
 # The commented out section below is an example of how to define a PostgreSQL
 # database that your application can use. `depends_on` tells Docker Compose to
