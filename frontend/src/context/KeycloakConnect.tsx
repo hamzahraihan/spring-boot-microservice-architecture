@@ -11,9 +11,9 @@ export interface KeycloakConnectType {
 }
 
 const keycloakInstance = new Keycloak({
-  url: import.meta.env.VITE_KEYCLOAK_URL,
-  realm: import.meta.env.VITE_KEYCLOAK_REALM,
-  clientId: import.meta.env.VITE_KEYCLOAK_CLIENT_ID,
+  url: window._env_?.VITE_KEYCLOAK_URL || import.meta.env.VITE_KEYCLOAK_URL,
+  realm: window._env_?.VITE_KEYCLOAK_REALM || import.meta.env.VITE_KEYCLOAK_REALM,
+  clientId: window._env_?.VITE_KEYCLOAK_CLIENT_ID || import.meta.env.VITE_KEYCLOAK_CLIENT_ID,
 });
 
 export const KeycloakProvider = ({ children }: { children: ReactNode }) => {
@@ -35,8 +35,8 @@ export const KeycloakProvider = ({ children }: { children: ReactNode }) => {
       .init({
         onLoad: "check-sso",
         pkceMethod: "S256",
-        silentCheckSsoRedirectUri:
-          window.location.origin + "/silent-check-sso.html",
+        checkLoginIframe: false,
+        silentCheckSsoRedirectUri: window.location.origin + "/silent-check-sso.html",
       })
       .then((authenticated) => {
         setIsAuthenticated(authenticated);
