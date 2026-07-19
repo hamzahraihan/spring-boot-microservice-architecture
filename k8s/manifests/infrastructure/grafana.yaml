@@ -1,0 +1,144 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: grafana
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: grafana
+  template:
+    metadata:
+      labels:
+        app: grafana
+    spec:
+      containers:
+        - name: grafana
+          image: grafana/grafana:13.0.1
+          resources:
+            requests:
+              memory: '256Mi'
+              cpu: '100m'
+            limits:
+              memory: '512Mi'
+              cpu: '500m'
+          ports:
+            - containerPort: 3000
+          env:
+            - name: GF_ANALYTICS_REPORTING_ENABLED
+              valueFrom:
+                configMapKeyRef:
+                  key: GF_ANALYTICS_REPORTING_ENABLED
+                  name: grafana-config
+            - name: GF_SECURITY_ADMIN_USER
+              valueFrom:
+                configMapKeyRef:
+                  key: GF_SECURITY_ADMIN_USER
+                  name: grafana-config
+            - name: GF_USERS_ALLOW_SIGN_UP
+              valueFrom:
+                configMapKeyRef:
+                  key: GF_USERS_ALLOW_SIGN_UP
+                  name: grafana-config
+            - name: GF_AUTH_ANONYMOUS_ENABLED
+              valueFrom:
+                configMapKeyRef:
+                  key: GF_AUTH_ANONYMOUS_ENABLED
+                  name: grafana-config
+            - name: GF_AUTH_ANONYMOUS_ORG_ROLE
+              valueFrom:
+                configMapKeyRef:
+                  key: GF_AUTH_ANONYMOUS_ORG_ROLE
+                  name: grafana-config
+            - name: GF_SECURITY_ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: GF_SECURITY_ADMIN_PASSWORD
+                  name: grafana-secret
+          volumeMounts:
+            - name: grafana-volume
+              mountPath: /etc/grafana/provisioning/datasources
+      volumes:
+        - name: grafana-volume
+          configMap:
+            name: grafana-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: grafana
+spec:
+  selector:
+    app: grafana
+  ports:
+    - port: 3000
+      protocol: TCP
+      targetPort: 3000
+  type: ClusterIP
+---
+apiVersion: v1
+data:
+  GF_SECURITY_ADMIN_PASSWORD: YWRtaW4=
+kind: Secret
+metadata:
+  name: grafana-secret
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-config
+data:
+  GF_ANALYTICS_REPORTING_ENABLED: 'false'
+  GF_SECURITY_ADMIN_USER: 'admin'
+  GF_USERS_ALLOW_SIGN_UP: 'false'
+  # Development conveniences:
+  GF_AUTH_ANONYMOUS_ENABLED: 'true'
+  GF_AUTH_ANONYMOUS_ORG_ROLE: 'Admin'
+  datasource.yml: |
+    apiVersion: 1
+
+    datasources:
+      - name: Prometheus
+        type: prometheus
+        access: proxy
+        url: http://prometheus.default.svc.cluster.local:9090
+        editable: false
+        jsonData:
+          httpMethod: POST
+          exemplarTraceIdDestinations:
+            - name: trace_id
+              datasourceUid: tempo
+      - name: Tempo
+        type: tempo
+        access: proxy
+        orgId: 1
+        url: http://tempo.default.svc.cluster.local:3200
+        basicAuth: false
+        isDefault: true
+        version: 1
+        editable: false
+        apiVersion: 1
+        uid: tempo
+        jsonData:
+          httpMethod: GET
+          tracesToLogs:
+            datasourceUid: 'loki'
+          nodeGraph:
+            enabled: true
+      - name: Loki
+        type: loki
+        uid: loki
+        access: proxy
+        orgId: 1
+        url: http://loki.default.svc.cluster.local:3100
+        basicAuth: false
+        isDefault: false
+        version: 1
+        editable: false
+        apiVersion: 1
+        jsonData:
+          derivedFields:
+            - datasourceUid: tempo
+              matcherRegex: \[.+,(.+?),
+              name: TraceID
+              url: $${__value.raw}
