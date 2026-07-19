@@ -12,18 +12,19 @@ services:
     build:
       context: .
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/order_service
-      - KAFKA_BOOTSTRAP_SERVERS=broker:29092
-      - SCHEMA_REGISTRY_URL=http://schema-registry:8081
-      - LOKI_URL=http://loki:3100/loki/api/v1/push
-      - ZIPKIN_URL=http://tempo:9411
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql.default.svc.cluster.local:3306/order_service
+      - KAFKA_BOOTSTRAP_SERVERS=http://kafka.default.svc.cluster.local:29092
+      - SCHEMA_REGISTRY_URL=http://schema_registry.default.svc.cluster.local:8081
+      - LOKI_URL=http://loki.default.svc.cluster.local:3100/loki/api/v1/push
+      - ZIPKIN_URL=http://tempo.default.svc.cluster.local:9411
+      - INVENTORY_SERVICE_URL=http://inventory-service.default.svc.cluster.local:8082
     ports:
       - 8081:8081
-    # depends_on:
-    #   - mysql
-    #   - broker
-    # networks:
-    #   - lgtm-network
+  #   depends_on:
+  #     - mysql
+  #     - broker
+  #   networks:
+  #     - lgtm-network
   # mysql:
   #   image: mysql:8.4.9
   #   container_name: order-service-mysql
@@ -47,48 +48,65 @@ services:
   #     ZOOKEEPER_TICK_TIME: 2000
   #   networks:
   #     - lgtm-network
-  # broker:
+  # kafka-controller:
   #   image: confluentinc/cp-kafka:7.5.0
-  #   container_name: broker
-  #   ports:
-  #     - "9092:9092"
-  #     - "29092:29092"
-  #   depends_on:
-  #     - zookeeper
+  #   container_name: kafka-controller
+  #   command: >
+  #     bash -c "
+  #     export KAFKA_CLUSTER_ID=4L62xdw2Rxy2xAFzbZzzzz &&
+  #     /etc/confluent/docker/run
+  #     "
   #   environment:
-  #     KAFKA_BROKER_ID: 1
-  #     KAFKA_ZOOKEEPER_CONNECT: "zookeeper:2181"
-  #     KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
-  #     KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://broker:29092,PLAINTEXT_HOST://localhost:9092
-  #     KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+  #     KAFKA_NODE_ID: 2
+  #     KAFKA_PROCESS_ROLES: "controller"
+  #     KAFKA_LISTENERS: "CONTROLLER://kraft-controller:9093"
+  #     KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: "CONTROLLER:PLAINTEXT"
+  #     KAFKA_CONTROLLER_LISTENER_NAMES: "CONTROLLER"
+  #     KAFKA_CONTROLLER_QUORUM_VOTERS: "2@kraft-controller:9093"
   #   networks:
   #     - lgtm-network
-  # schema-registry:
-  #   image: confluentinc/cp-schema-registry:7.5.0
-  #   hostname: schema-registry
-  #   container_name: schema-registry
-  #   depends_on:
-  #     - broker
-  #   ports:
-  #     - "8085:8081"
-  #   environment:
-  #     SCHEMA_REGISTRY_HOST_NAME: schema-registry
-  #     SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: "broker:29092"
-  #     SCHEMA_REGISTRY_LISTENERS: http://schema-registry:8081
-  # kafka-ui:
-  #   container_name: kafka-ui
-  #   image: provectuslabs/kafka-ui:latest
-  #   ports:
-  #     - "8086:8080"
-  #   depends_on:
-  #     - broker
-  #   environment:
-  #     KAFKA_CLUSTERS_NAME: local
-  #     KAFKA_CLUSTERS_BOOTSTRAPSERVERS: broker:29092
-  #     #      KAFKA_CLUSTERS_SCHEMAREGISTRY: http://schema-registry:8081
-  #     DYNAMIC_CONFIG_ENABLED: "true"
-  #   networks:
-  #     - lgtm-network
+#   broker:
+#     image: confluentinc/cp-kafka:7.5.0
+#     container_name: broker
+#     ports:
+#       - "9092:9092"
+#       - "29092:29092"
+#     environment:
+#       KAFKA_NODE_ID: 1
+#       KAFKA_PROCESS_ROLES: "controller"
+#       KAFKA_CONTROLLER_LISTENER_NAMES: "CONTROLLER"
+#       KAFKA_CONTROLLER_QUORUM_VOTERS: "2@kraft-controller:9093"
+#       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT,CONTROLLER:PLAINTEXT
+#       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://broker:29092,PLAINTEXT_HOST://localhost:9092
+#       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+#     networks:
+#       - lgtm-network
+#   schema-registry:
+#     image: confluentinc/cp-schema-registry:7.5.0
+#     hostname: schema-registry
+#     container_name: schema-registry
+#     depends_on:
+#       - broker
+#     ports:
+#       - "8085:8081"
+#     environment:
+#       SCHEMA_REGISTRY_HOST_NAME: schema-registry
+#       SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: "broker:29092"
+#       SCHEMA_REGISTRY_LISTENERS: http://schema-registry:8081
+#   kafka-ui:
+#     container_name: kafka-ui
+#     image: provectuslabs/kafka-ui:latest
+#     ports:
+#       - "8086:8080"
+#     depends_on:
+#       - broker
+#     environment:
+#       KAFKA_CLUSTERS_NAME: local
+#       KAFKA_CLUSTERS_BOOTSTRAPSERVERS: broker:29092
+#       #      KAFKA_CLUSTERS_SCHEMAREGISTRY: http://schema-registry:8081
+#       DYNAMIC_CONFIG_ENABLED: "true"
+#     networks:
+#       - lgtm-network
 
 # volumes:
 #   mysql_data:
