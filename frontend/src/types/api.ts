@@ -2,7 +2,6 @@ export type OrderType = {
   quantity: number;
   price: number;
   skuCode: string;
-  userDetails: UserDetails;
 };
 
 export type UserDetails = {
