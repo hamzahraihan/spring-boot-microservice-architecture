@@ -23,9 +23,9 @@ spec:
               cpu: '250m' # 25% of a core
             limits:
               memory: '1Gi' # Strict cap to save your host OS
-              # cpu: '1000m' # 1 full core (needed for fast startup)
+              cpu: '1000m' # 1 full core (needed for fast startup)
           ports:
-            - containerPort: 8080
+            - containerPort: 8181
           # args: ['start-dev']
           command:
             - '/bin/sh'
@@ -77,7 +77,8 @@ spec:
   selector:
     app: keycloak
   ports:
-    - port: 8080
+    - port: 8181
+      protocol: TCP
       targetPort: 8080
   type: ClusterIP
 ---
