@@ -48,25 +48,12 @@ RUN npm run build
 ################################################################################
 # Create a new stage to run the application with minimal runtime dependencies
 # where the necessary files are copied from the build stage.
-FROM base as final
+FROM nginx:alpine
 
-# Use production node environment by default.
-ENV NODE_ENV production
+# Copy the static build files from the builder stage to Nginx's default public folder
+COPY --from=build /usr/src/app/dist /usr/share/nginx/html
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-# Run the application as a non-root user.
-USER node
+EXPOSE 80
 
-# Copy package.json so that package manager commands can be used.
-COPY package.json .
-
-# Copy the production dependencies from the deps stage and also
-# the built application from the build stage into the image.
-COPY --from=deps /usr/src/app/node_modules ./node_modules
-COPY --from=build /usr/src/app/build ./build
-
-
-# Expose the port that the application listens on.
-EXPOSE 5173
-
-# Run the application.
-CMD ["npm run start"]
+CMD ["nginx", "-g", "daemon off;"]
