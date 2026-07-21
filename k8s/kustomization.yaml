@@ -21,3 +21,5 @@ resources:
   - manifests/infrastructure/prometheus.yaml
   - manifests/infrastructure/schema-registry.yaml
   - manifests/infrastructure/tempo.yaml
+  - manifests/infrastructure/ingress.yaml
+
