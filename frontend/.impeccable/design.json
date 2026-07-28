@@ -1,0 +1,206 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-07-28T08:12:00Z",
+  "title": "Design System: Microshop",
+  "extensions": {
+    "colorMeta": {
+      "service-blue": {
+        "role": "primary",
+        "displayName": "Service Blue",
+        "canonical": "#2563eb",
+        "tonalRamp": [
+          "oklch(15% 0.15 260)",
+          "oklch(25% 0.15 260)",
+          "oklch(35% 0.15 260)",
+          "oklch(45% 0.15 260)",
+          "oklch(55% 0.15 260)",
+          "oklch(65% 0.15 260)",
+          "oklch(80% 0.15 260)",
+          "oklch(95% 0.15 260)"
+        ]
+      },
+      "page-background": {
+        "role": "neutral",
+        "displayName": "Page Background",
+        "canonical": "#f9fafb",
+        "tonalRamp": [
+          "oklch(15% 0.01 250)",
+          "oklch(25% 0.01 250)",
+          "oklch(35% 0.01 250)",
+          "oklch(45% 0.01 250)",
+          "oklch(55% 0.01 250)",
+          "oklch(65% 0.01 250)",
+          "oklch(80% 0.01 250)",
+          "oklch(95% 0.01 250)"
+        ]
+      },
+      "base-text": {
+        "role": "neutral",
+        "displayName": "Base Text",
+        "canonical": "#1f2937",
+        "tonalRamp": [
+          "oklch(15% 0.02 255)",
+          "oklch(25% 0.02 255)",
+          "oklch(35% 0.02 255)",
+          "oklch(45% 0.02 255)",
+          "oklch(55% 0.02 255)",
+          "oklch(65% 0.02 255)",
+          "oklch(80% 0.02 255)",
+          "oklch(95% 0.02 255)"
+        ]
+      },
+      "action-danger": {
+        "role": "primary",
+        "displayName": "Action Danger",
+        "canonical": "orangered",
+        "tonalRamp": [
+          "oklch(15% 0.12 35)",
+          "oklch(25% 0.12 35)",
+          "oklch(35% 0.12 35)",
+          "oklch(45% 0.12 35)",
+          "oklch(55% 0.12 35)",
+          "oklch(65% 0.12 35)",
+          "oklch(80% 0.12 35)",
+          "oklch(95% 0.12 35)"
+        ]
+      },
+      "action-order": {
+        "role": "primary",
+        "displayName": "Action Order",
+        "canonical": "green",
+        "tonalRamp": [
+          "oklch(15% 0.12 145)",
+          "oklch(25% 0.12 145)",
+          "oklch(35% 0.12 145)",
+          "oklch(45% 0.12 145)",
+          "oklch(55% 0.12 145)",
+          "oklch(65% 0.12 145)",
+          "oklch(80% 0.12 145)",
+          "oklch(95% 0.12 145)"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "body": {
+        "displayName": "Body",
+        "purpose": "Primary reading, product details, and form-adjacent explanatory text."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Action controls and navigation labels requiring higher emphasis."
+      }
+    },
+    "shadows": [
+      {
+        "name": "ambient-frame",
+        "value": "0 1px 3px rgba(0, 0, 0, 0.1)",
+        "purpose": "Reserved for high-level framing surfaces."
+      }
+    ],
+    "motion": [
+      {
+        "name": "transition-standard",
+        "value": "0.3s",
+        "purpose": "General interaction transition cadence from root token."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "md",
+        "value": "768px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Login Button",
+      "kind": "button",
+      "refersTo": "button-login",
+      "description": "Primary authentication entry action in the top navigation.",
+      "html": "<button class=\"ds-btn-login\">Login</button>",
+      "css": ".ds-btn-login { background: #000000; color: #fff3f6; padding: 0.5rem 1.5rem; height: 50px; border: none; border-radius: 12px; font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 1rem; font-weight: 500; transition: filter 0.3s; } .ds-btn-login:hover { filter: brightness(1.1); } .ds-btn-login:focus-visible { outline: 2px solid #2563eb; outline-offset: 2px; } .ds-btn-login:active { transform: translateY(1px); }"
+    },
+    {
+      "name": "Logout Button",
+      "kind": "button",
+      "refersTo": "button-logout",
+      "description": "Session exit action with high-contrast danger intent.",
+      "html": "<button class=\"ds-btn-logout\">Logout</button>",
+      "css": ".ds-btn-logout { background: orangered; color: #fff3f6; padding: 0.5rem 1.5rem; height: 50px; border: none; border-radius: 12px; font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 1rem; font-weight: 500; transition: filter 0.3s; } .ds-btn-logout:hover { filter: brightness(1.08); } .ds-btn-logout:focus-visible { outline: 2px solid #2563eb; outline-offset: 2px; } .ds-btn-logout:active { transform: translateY(1px); }"
+    },
+    {
+      "name": "Order Button",
+      "kind": "button",
+      "refersTo": "button-order",
+      "description": "Commerce confirmation action on product cards.",
+      "html": "<button class=\"ds-btn-order\">Order Now</button>",
+      "css": ".ds-btn-order { background: green; color: #fff3f6; padding: 0.5rem 1.5rem; height: 50px; border: none; border-radius: 12px; font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 1rem; font-weight: 500; transition: filter 0.3s; } .ds-btn-order:hover { filter: brightness(1.08); } .ds-btn-order:focus-visible { outline: 2px solid #2563eb; outline-offset: 2px; } .ds-btn-order:active { transform: translateY(1px); }"
+    },
+    {
+      "name": "Form Input",
+      "kind": "input",
+      "refersTo": "input-default",
+      "description": "Compact bordered input used in product and quantity forms.",
+      "html": "<input class=\"ds-input\" type=\"text\" value=\"Sample value\" />",
+      "css": ".ds-input { background: #ffffff; color: #1f2937; border: 1px solid burlywood; border-radius: 5px; padding: 4px; font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 1rem; } .ds-input:hover { border-color: #2563eb; } .ds-input:focus-visible { outline: 2px solid #2563eb; outline-offset: 1px; } .ds-input:active { border-color: #1d4ed8; }"
+    },
+    {
+      "name": "Product Card",
+      "kind": "card",
+      "refersTo": "card-product",
+      "description": "Primary product presentation container for orderable items.",
+      "html": "<article class=\"ds-card-product\"><h3 class=\"ds-card-title\">Product Name</h3><p class=\"ds-card-price\">Price: $129</p><button class=\"ds-btn-order-mini\">Order Now</button></article>",
+      "css": ".ds-card-product { display: flex; align-items: center; justify-content: space-between; gap: 16px; background: beige; color: #1f2937; border: 1px solid blanchedalmond; border-radius: 20px; padding: 20px; } .ds-card-title { margin: 0; font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 1.25rem; font-weight: 600; } .ds-card-price { margin: 0; font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 1rem; } .ds-btn-order-mini { background: green; color: #fff3f6; border: none; border-radius: 12px; padding: 0.5rem 1rem; font-size: 0.95rem; font-weight: 500; transition: filter 0.3s; } .ds-btn-order-mini:hover { filter: brightness(1.08); } .ds-btn-order-mini:focus-visible { outline: 2px solid #2563eb; outline-offset: 2px; }"
+    },
+    {
+      "name": "Top Navigation",
+      "kind": "nav",
+      "refersTo": "nav-title-chip",
+      "description": "Horizontal navigation scaffold with a soft brand chip and action group.",
+      "html": "<nav class=\"ds-nav\"><div class=\"ds-brand-chip\">Microshop</div><ul class=\"ds-nav-menu\"><li><a href=\"#\">Products</a></li><li><a href=\"#\">Services</a></li><li><a href=\"#\">About</a></li></ul></nav>",
+      "css": ".ds-nav { display: flex; align-items: center; justify-content: space-between; width: 90vw; } .ds-brand-chip { display: inline-flex; align-items: center; justify-content: center; background: antiquewhite; color: #1f2937; border-radius: 12px; padding: 0.5rem 1.5rem; font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 1rem; font-weight: 600; } .ds-nav-menu { display: flex; align-items: center; gap: 1.5rem; margin: 0; padding: 0; list-style: none; } .ds-nav-menu a { color: #1f2937; text-decoration: none; font-weight: 500; transition: color 0.3s; } .ds-nav-menu a:hover { color: #2563eb; } .ds-nav-menu a:focus-visible { outline: 2px solid #2563eb; outline-offset: 2px; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Trustworthy Service Counter",
+    "overview": "Microshop presents commerce actions in a calm, dependable, and task-first visual language. The interface is intentionally simple: clear surfaces, explicit controls, and low visual noise so buyers can move from browsing to ordering without ambiguity.\n\nThe system favors readable utility over ornamental expression. Color is used functionally to separate action intent (login, order, submit, logout) while neutrals keep most surfaces quiet and stable. Rounded geometry softens system interactions while preserving a practical, operational tone suited to a microservice reference product.",
+    "keyCharacteristics": [
+      "Calm neutral canvas with functional action accents.",
+      "Rounded, approachable control shapes without decorative depth.",
+      "Compact vertical flow optimized for quick list scanning and form completion.",
+      "Task-first interaction hierarchy with explicit action labeling."
+    ],
+    "rules": [
+      {
+        "name": "The Functional Accent Rule",
+        "body": "Accent colors signal action intent before decoration; each strong color must map to a distinct action type.",
+        "section": "colors"
+      },
+      {
+        "name": "The Quiet Canvas Rule",
+        "body": "Background and body-text neutrals remain stable so operational content, not styling, carries attention.",
+        "section": "colors"
+      },
+      {
+        "name": "The Native Readability Rule",
+        "body": "Keep the system stack intact to preserve predictable rendering across browsers and devices.",
+        "section": "typography"
+      },
+      {
+        "name": "The Flat-by-Default Rule",
+        "body": "Components remain flat at rest; depth appears only when structural framing is needed.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Do preserve functional color intent (login/logout/order/submit each keep a distinct role).",
+      "Do keep base spacing compact and consistent (`4px`, `8px`, `16px`, `20px`) to protect scan speed.",
+      "Do use rounded geometry intentionally: tighter radii for inputs, larger radii for grouped cards."
+    ],
+    "donts": [
+      "Don't introduce decorative shadows on routine components; keep the system flat-by-default.",
+      "Don't replace the system font stack with expressive families that reduce operational clarity.",
+      "Don't apply strong accent colors as background fields for large surfaces; reserve them for actions and state cues."
+    ]
+  }
+}
