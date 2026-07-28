@@ -1,44 +1,66 @@
-/* div { */
-/*   border: 1px solid red; */
-/* } */
-
 .navbar {
   display: flex;
-  flex-direction: row;
   align-items: center;
   justify-content: center;
-  height: 50px;
-  padding: 10px;
+  min-height: 64px;
+  padding: 10px 0;
+  margin-bottom: 12px;
+  border-bottom: 1px solid var(--surface-border);
 }
 
 .container-navbar {
   display: flex;
-  flex-direction: row;
   justify-content: space-between;
+  align-items: center;
   width: 90vw;
+  gap: 16px;
+  flex-wrap: wrap;
 }
 
 .title-navbar {
   display: inline-flex;
   justify-content: center;
   align-items: center;
-  background-color: antiquewhite;
+  background-color: var(--brand-chip-bg);
   padding: 0.5rem 1.5rem;
   border-radius: 12px;
+  color: var(--text-color);
+  font-weight: 600;
 }
 
 .nav-menu {
   display: flex;
-  gap: 1.5rem; /* Flexible spacing between links */
-  list-style: none;
+  gap: 1.5rem;
   justify-content: center;
   align-items: center;
 }
 
+.nav-link {
+  color: var(--text-color);
+  text-decoration: none;
+  font-weight: 500;
+  padding-bottom: 2px;
+  border-bottom: 2px solid transparent;
+  transition: border-color var(--transition-speed);
+}
+
+.nav-link:hover {
+  color: var(--primary-color);
+}
+
+.nav-link.active {
+  border-bottom-color: var(--primary-color);
+}
+
+.auth-actions {
+  display: flex;
+  align-items: center;
+}
+
 .btn-login {
-  background-color: #000000;
+  background-color: var(--action-ink);
 }
 
 .btn-logout {
-  background-color: orangered;
+  background-color: var(--action-danger);
 }
