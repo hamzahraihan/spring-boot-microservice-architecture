@@ -1,4 +1,4 @@
-import { Outlet } from "react-router";
+import { NavLink, Outlet } from "react-router";
 import "./home-layout.css";
 import { useKeycloak } from "../../hooks/useKeycloak";
 
@@ -9,19 +9,17 @@ function HomeLayout() {
       <div className="navbar">
         <div className="container-navbar">
           <div className="title-navbar">Microshop</div>
-          <ul className="nav-menu">
-            <li>
-              <button>Products</button>
-            </li>
-            <li>
-              <button>Services</button>
-            </li>
-            <li>
-              <button>About</button>
-            </li>
-          </ul>
+          <nav aria-label="Primary">
+            <ul className="nav-menu">
+              <li>
+                <NavLink to="/" className="nav-link">
+                  Products
+                </NavLink>
+              </li>
+            </ul>
+          </nav>
 
-          <div>
+          <div className="auth-actions">
             {isAuthenticated ? (
               <button
                 className="btn btn-logout"
@@ -35,12 +33,6 @@ function HomeLayout() {
                 onClick={() => keycloak?.login()}
               >
                 Login
-              </button>
-            )}
-
-            {isAuthenticated && (
-              <button onClick={() => console.log(keycloak?.token)}>
-                JWT token
               </button>
             )}
           </div>
