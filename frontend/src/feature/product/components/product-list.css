@@ -8,3 +8,41 @@
   flex-direction: column;
   gap: 15px;
 }
+
+.state-card {
+  border: 1px solid var(--surface-border);
+  border-radius: 12px;
+  background-color: var(--surface-color);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-width: 560px;
+}
+
+.state-title {
+  font-weight: 600;
+}
+
+.state-description {
+  color: var(--muted-text-color);
+}
+
+.order-notice {
+  border-radius: 8px;
+  border: 1px solid transparent;
+  padding: 10px 12px;
+  margin-bottom: 12px;
+}
+
+.order-notice.success {
+  color: var(--text-color);
+  background-color: var(--card-background-color);
+  border-color: var(--action-submit);
+}
+
+.order-notice.error {
+  color: var(--text-color);
+  background-color: var(--card-background-color);
+  border-color: var(--action-danger);
+}
