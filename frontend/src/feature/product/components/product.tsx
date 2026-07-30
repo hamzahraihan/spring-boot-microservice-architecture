@@ -5,14 +5,17 @@ import type { OrderType, ProductType } from "../../../types/api";
 function ProductCard({
   data,
   handleOrder,
+  isOrdering,
 }: {
   data: ProductType;
   handleOrder: (data: OrderType) => void;
+  isOrdering: boolean;
 }) {
   const [qty, setQty] = useState<number>(1);
+
   return (
     <div key={data.id} className="card">
-      <div>
+      <div className="card-content">
         <ul>
           <li>
             <h2>{data.name}</h2>
@@ -21,17 +24,17 @@ function ProductCard({
             <p>Price: ${data.price}</p>
           </li>
         </ul>
-        <p>Quantity</p>
+        <label htmlFor={data.id}>Quantity</label>
         <input
           type="number"
           id={data.id}
           name="qty"
           value={Number.isNaN(qty) ? "" : qty}
           min={1}
+          step={1}
+          disabled={isOrdering}
           onChange={(e) => {
             const val = e.target.value;
-
-            // If empty, set state to 0 or "" so the user can type something new
             if (val === "") {
               setQty(1);
             } else {
@@ -44,6 +47,7 @@ function ProductCard({
       </div>
       <button
         className="btn btn-order"
+        disabled={isOrdering}
         onClick={() =>
           handleOrder({
             skuCode: data.skuCode,
@@ -52,7 +56,7 @@ function ProductCard({
           })
         }
       >
-        Order Now
+        {isOrdering ? "Ordering..." : "Order Now"}
       </button>
     </div>
   );
