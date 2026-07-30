@@ -1,4 +1,4 @@
-import { useState, type ChangeEvent } from "react";
+import { useState, type ChangeEvent, type FormEvent } from "react";
 import type { ProductType } from "../../../types/api";
 import { createProduct } from "../api/create-product";
 import { useKeycloak } from "../../../hooks/useKeycloak";
@@ -7,6 +7,8 @@ import { useNavigate } from "react-router";
 
 function AddProductPage() {
   const { keycloak } = useKeycloak();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
   const [formData, setFormData] = useState<ProductType>({
     name: "",
     description: "",
@@ -25,20 +27,55 @@ function AddProductPage() {
     }));
   };
 
-  const handleSubmit = async (event: ChangeEvent) => {
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    console.log("Form submitted successfully: ", formData);
-    const response = await createProduct(keycloak?.token, formData);
-    if (response.ok) {
-      navigate("/");
+    if (!keycloak?.token) {
+      setSubmitError("Please login before adding a product.");
+      return;
+    }
+
+    try {
+      setSubmitError(null);
+      setIsSubmitting(true);
+      const response = await createProduct(keycloak.token, formData);
+      if (response.ok) {
+        navigate("/");
+        return;
+      }
+
+      if (response.status === 409) {
+        setSubmitError("SKU code already exists. Please use a different SKU.");
+        return;
+      }
+
+      if (response.status === 400) {
+        setSubmitError("Invalid product data. Please review the fields.");
+        return;
+      }
+
+      setSubmitError("We couldn't add this product right now. Please try again.");
+    } catch (err) {
+      console.error("Create product failed", err);
+      setSubmitError("Unexpected error while saving product. Please retry.");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   return (
-    <div>
-      <h2>Add Product</h2>
-      <form className="form" onSubmit={handleSubmit}>
-        <div className="flex" style={{ marginBottom: 15 }}>
+    <section className="add-product-page">
+      <div className="add-product-header">
+        <h2>Add Product</h2>
+      </div>
+
+      {submitError && (
+        <p className="add-product-notice" role="alert">
+          {submitError}
+        </p>
+      )}
+
+      <form className="add-product-form" onSubmit={handleSubmit}>
+        <div className="add-product-field">
           <label>Name Product:</label>
           <input
             type="text"
@@ -47,11 +84,12 @@ function AddProductPage() {
             name="name"
             value={formData.name}
             onChange={handleChange}
+            disabled={isSubmitting}
             required
           />
         </div>
 
-        <div className="flex" style={{ marginBottom: 15 }}>
+        <div className="add-product-field">
           <label>Description Product:</label>
           <input
             type="text"
@@ -60,11 +98,12 @@ function AddProductPage() {
             name="description"
             value={formData.description}
             onChange={handleChange}
+            disabled={isSubmitting}
             required
           />
         </div>
 
-        <div className="flex" style={{ marginBottom: 15 }}>
+        <div className="add-product-field">
           <label>Price Product:</label>
           <input
             type="number"
@@ -73,11 +112,14 @@ function AddProductPage() {
             name="price"
             value={formData.price}
             onChange={handleChange}
+            min={0}
+            step="0.01"
+            disabled={isSubmitting}
             required
           />
         </div>
 
-        <div className="flex" style={{ marginBottom: 15 }}>
+        <div className="add-product-field">
           <label>Sku Code of Product:</label>
           <input
             type="text"
@@ -86,15 +128,16 @@ function AddProductPage() {
             name="skuCode"
             value={formData.skuCode}
             onChange={handleChange}
+            disabled={isSubmitting}
             required
           />
         </div>
 
-        <button type="submit" className="btn btn-submit">
-          Submit
+        <button type="submit" className="btn btn-submit add-product-submit" disabled={isSubmitting}>
+          {isSubmitting ? "Submitting..." : "Submit"}
         </button>
       </form>
-    </div>
+    </section>
   );
 }
 
