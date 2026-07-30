@@ -2,8 +2,18 @@
   --primary-color: #2563eb;
   --primary-hover: #1d4ed8;
   --text-color: #1f2937;
+  --muted-text-color: #6b7280;
   --bg-color: #f9fafb;
   --card-bg: #ffffff;
+  --card-background-color: beige;
+  --card-border-color: blanchedalmond;
+  --surface-color: #ffffff;
+  --surface-border: burlywood;
+  --brand-chip-bg: antiquewhite;
+  --action-ink: #000000;
+  --action-danger: orangered;
+  --action-order: green;
+  --action-submit: lightgreen;
   --border-radius: 8px;
   --transition-speed: 0.3s;
 }
@@ -84,6 +94,10 @@ button {
   text-decoration: none; /* In case you use an <a> tag */
 }
 
+button:disabled {
+  cursor: not-allowed;
+}
+
 main {
   max-width: 1100px;
   margin: 2rem auto;
@@ -116,7 +130,7 @@ footer {
   text-align: center;
   padding: 2rem 1rem;
   color: #6b7280;
-  font-size: 0.875rem;
+  font-size: 1rem;
 }
 
 .btn {
