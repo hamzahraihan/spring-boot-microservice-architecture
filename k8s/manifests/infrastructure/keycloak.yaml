@@ -22,15 +22,15 @@ spec:
               memory: '512Mi'
               cpu: '250m' # 25% of a core
             limits:
-              memory: '1Gi' # Strict cap to save your host OS
+              memory: '2Gi' # Strict cap to save your host OS
               cpu: '1000m' # 1 full core (needed for fast startup)
           ports:
             - containerPort: 8181
-          # args: ['start-dev']
-          command:
-            - '/bin/sh'
-            - '-c'
-            - '/opt/keycloak/bin/kc.sh build && /opt/keycloak/bin/kc.sh start --optimized --hostname-strict=false --http-enabled=true'
+          args: ['start-dev']
+          # command:
+          #   - '/bin/sh'
+          #   - '-c'
+          #   - '/opt/keycloak/bin/kc.sh build && /opt/keycloak/bin/kc.sh start --optimized --hostname-strict=false --http-enabled=true'
           env:
             - name: KC_DB_USERNAME
               valueFrom:
