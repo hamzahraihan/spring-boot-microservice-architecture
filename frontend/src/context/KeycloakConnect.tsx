@@ -44,7 +44,7 @@ export const KeycloakProvider = ({ children }: { children: ReactNode }) => {
       })
       .then((authenticated) => {
         setIsAuthenticated(authenticated);
-        setIsInitialized(authenticated);
+        setIsInitialized(true);
 
         if (authenticated) {
           keycloakInstance.loadUserProfile().then((profile) =>
